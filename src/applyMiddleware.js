@@ -27,10 +27,39 @@ export default function applyMiddleware(...middlewares) {
     }
 
     const middlewareAPI = {
+      // 看看getState，然后没干啥
       getState: store.getState,
       dispatch: (...args) => dispatch(...args)
     }
+
+    // 返回的是一个数组
     const chain = middlewares.map(middleware => middleware(middlewareAPI))
+
+    // 返回的是一个嵌套的函数调用，然后可以，执行的时候，根据注册顺序，从后往前执行
+    // 研究一下异步的插件，等我再回来
+
+    // 回来了：redux-thunk核心代码
+    // function createThunkMiddleware(extraArgument) {
+    //   return ({ dispatch, getState }) => next => action => {
+    //     if (typeof action === 'function') {
+    //       return action(dispatch, getState, extraArgument);
+    //     }
+    //
+    //     return next(action);
+    //   };
+    // }
+    // const thunk = createThunkMiddleware();
+    // thunk.withExtraArgument = createThunkMiddleware;
+    // export default thunk;
+    // 所以thunk还有另外一种使用方式，可以带其他的参数
+
+    // 漏了一点：看看异步的redux怎么写
+    // someAction = () => (dispatch, getState) => { // balabala}
+    // 大概想明白了其中的原理
+    // 当执行到thunk的中间件时候，判断是否是函数，如不是（而是action）则是一个同步过程，如果是
+    // 函数，则利用闭包，把dispatch和getState传递进去，这样，就可以在异步回调中，使用dispatch
+    // 和 getState
+
     dispatch = compose(...chain)(store.dispatch)
 
     return {

@@ -28,6 +28,8 @@ import isPlainObject from './utils/isPlainObject'
  * @returns {Store} A Redux store that lets you read the state, dispatch actions
  * and subscribe to changes.
  */
+
+// 感觉这三个参数怪怪的，可以强制用户传第二个参数不？？
 export default function createStore(reducer, preloadedState, enhancer) {
   if (
     (typeof preloadedState === 'function' && typeof enhancer === 'function') ||
@@ -50,6 +52,8 @@ export default function createStore(reducer, preloadedState, enhancer) {
       throw new Error('Expected the enhancer to be a function.')
     }
 
+    // 这里是不是只能调用applyMiddleware
+    // 会在enhancer中直接创建好store，然后直接返回
     return enhancer(createStore)(reducer, preloadedState)
   }
 
